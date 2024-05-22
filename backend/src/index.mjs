@@ -1,15 +1,17 @@
-require("dotenv").config();
-const express = require("express");
-const { ApolloServer } = require("apollo-server-express");
-const http = require("http");
-const cors = require("cors");
-const { makeExecutableSchema } = require("@graphql-tools/schema");
-const { execute, subscribe } = require("graphql");
-const { SubscriptionServer } = require("subscriptions-transport-ws");
-const { typeDefs } = require("./schema");
-const { resolvers } = require("./resolvers");
-const { sequelize } = require("./models");
-const { getUserFromToken } = require("./auth");
+import dotenv from "dotenv";
+dotenv.config();
+
+import express from "express";
+import { ApolloServer } from "apollo-server-express";
+import http from "http";
+import cors from "cors";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { execute, subscribe } from "graphql";
+import { SubscriptionServer } from "subscriptions-transport-ws";
+import { typeDefs } from "./schema.mjs";
+import { resolvers } from "./resolvers.mjs";
+import { sequelize } from "./models.mjs";
+import { getUserFromToken } from "./auth.mjs";
 
 const app = express();
 app.use(
@@ -36,15 +38,15 @@ async function startServer() {
 
   const httpServer = http.createServer(app);
 
-  SubscriptionServer.create(
+  new SubscriptionServer(
     {
       execute,
       subscribe,
       schema,
-      onConnect: (connectionParams, webSocket, context) => {
+      onConnect: () => {
         console.log("Connected to websocket");
       },
-      onDisconnect: (webSocket, context) => {
+      onDisconnect: () => {
         console.log("Disconnected from websocket");
       },
     },
@@ -62,5 +64,10 @@ async function startServer() {
     );
   });
 }
+
+await sequelize.authenticate();
+console.log("Database connected...");
+await sequelize.sync();
+console.log("Database synchronized...");
 
 startServer();

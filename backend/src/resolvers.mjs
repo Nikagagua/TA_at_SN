@@ -1,12 +1,6 @@
-const { PubSub } = require("graphql-subscriptions");
-const bcrypt = require("bcryptjs");
-const { User } = require("./models");
-const { createToken, getUserFromToken } = require("./auth");
+import { User } from "./models.mjs";
 
-const pubsub = new PubSub();
-const SIGN_IN_COUNT_UPDATED = "SIGN_IN_COUNT_UPDATED";
-
-const resolvers = {
+export const resolvers = {
   Query: {
     me: async (_, __, { user }) => user,
     globalSignInCount: async () => {
@@ -27,17 +21,7 @@ const resolvers = {
       }
       user.signInCount += 1;
       await user.save();
-      pubsub.publish(SIGN_IN_COUNT_UPDATED, {
-        signInCountUpdated: user.signInCount,
-      });
       return { token: createToken(user), user };
     },
   },
-  Subscription: {
-    signInCountUpdated: {
-      subscribe: () => pubsub.asyncIterator([SIGN_IN_COUNT_UPDATED]),
-    },
-  },
 };
-
-module.exports = { resolvers };

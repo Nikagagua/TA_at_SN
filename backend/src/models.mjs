@@ -1,5 +1,7 @@
-const { Sequelize, DataTypes } = require("sequelize");
-require("dotenv").config();
+import { Sequelize, DataTypes } from "sequelize";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: "sqlite",
@@ -12,6 +14,4 @@ const User = sequelize.define("User", {
   signInCount: { type: DataTypes.INTEGER, defaultValue: 0 },
 });
 
-sequelize.sync();
-
-module.exports = { sequelize, User };
+export { sequelize, User };

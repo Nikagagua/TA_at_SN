@@ -1,6 +1,6 @@
-const { gql } = require("apollo-server-express");
+import { gql } from "apollo-server-express";
 
-const typeDefs = gql`
+export const typeDefs = gql`
   type User {
     id: ID!
     username: String!
@@ -21,10 +21,4 @@ const typeDefs = gql`
     register(username: String!, password: String!): AuthPayload
     login(username: String!, password: String!): AuthPayload
   }
-
-  type Subscription {
-    signInCountUpdated: Int!
-  }
 `;
-
-module.exports = { typeDefs };
