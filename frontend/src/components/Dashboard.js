@@ -57,6 +57,10 @@ const Dashboard = () => {
   }, [globalSignInCount]);
 
   if (meError) {
+    if (meError.message.includes("Not authenticated")) {
+      // Handle not authenticated error by redirecting to login page
+      window.location.href = "/login";
+    }
     return <p>Error fetching me data: {meError.message}</p>;
   }
 

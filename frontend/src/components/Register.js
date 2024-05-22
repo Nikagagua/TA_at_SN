@@ -17,14 +17,18 @@ const REGISTER_MUTATION = gql`
 const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [register] = useMutation(REGISTER_MUTATION);
+  const [register, { error }] = useMutation(REGISTER_MUTATION);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { data } = await register({ variables: { username, password } });
-    localStorage.setItem("token", data.register.token);
-    navigate("/dashboard");
+    try {
+      const { data } = await register({ variables: { username, password } });
+      localStorage.setItem("token", data.register.token);
+      navigate("/dashboard");
+    } catch (e) {
+      console.error("Error during registration:", e);
+    }
   };
 
   return (
@@ -44,6 +48,7 @@ const Register = () => {
         />
         <button type="submit">Register</button>
       </form>
+      {error && <p>Error registering: {error.message}</p>}
     </div>
   );
 };

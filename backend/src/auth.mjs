@@ -2,16 +2,22 @@ import jwt from "jsonwebtoken";
 import { User } from "./models.mjs";
 
 export const createToken = (user) => {
-  return jwt.sign({ id: user.id, username: user.username }, "your-secret-key", {
-    expiresIn: "1d",
-  });
+  return jwt.sign(
+    { id: user.id, username: user.username },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "1d",
+    },
+  );
 };
 
 export const getUserFromToken = async (token) => {
+  if (!token) return null;
   try {
-    const decoded = jwt.verify(token, "your-secret-key");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     return await User.findByPk(decoded.id);
   } catch (err) {
+    console.error("Failed to authenticate token:", err);
     return null;
   }
 };

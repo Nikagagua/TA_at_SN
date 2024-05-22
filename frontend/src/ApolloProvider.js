@@ -36,7 +36,7 @@ const client = new ApolloClient({
   link: splitLink,
   cache: new InMemoryCache(),
   headers: {
-    authorization: localStorage.getItem("token") || "",
+    authorization: `Bearer ${localStorage.getItem("token") || ""}`,
   },
 });
 
