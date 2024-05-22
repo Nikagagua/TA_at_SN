@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useQuery, gql } from "@apollo/client";
-import io from "socket.io-client";
+import { useQuery, gql, useSubscription } from "@apollo/client";
 
 const ME_QUERY = gql`
   query me {
@@ -18,6 +17,12 @@ const GLOBAL_SIGN_IN_COUNT_QUERY = gql`
   }
 `;
 
+const SIGN_IN_COUNT_SUBSCRIPTION = gql`
+  subscription {
+    signInCountUpdated
+  }
+`;
+
 const Dashboard = () => {
   const { data: meData, refetch: refetchMe } = useQuery(ME_QUERY, {
     onError: (error) => console.error("Error fetching me data", error),
@@ -31,27 +36,18 @@ const Dashboard = () => {
 
   const [globalSignInCount, setGlobalSignInCount] = useState(0);
 
+  useSubscription(SIGN_IN_COUNT_SUBSCRIPTION, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      refetchMe();
+      refetchGlobal();
+    },
+  });
+
   useEffect(() => {
     if (globalData) {
       setGlobalSignInCount(globalData.globalSignInCount);
     }
   }, [globalData]);
-
-  useEffect(() => {
-    const socket = io("http://localhost:4000", {
-      withCredentials: true,
-      extraHeaders: {
-        "my-custom-header": "abcd",
-      },
-    });
-
-    socket.on("signInCountUpdated", () => {
-      refetchMe();
-      refetchGlobal();
-    });
-
-    return () => socket.disconnect();
-  }, [refetchMe, refetchGlobal]);
 
   useEffect(() => {
     if (globalSignInCount >= 5) {

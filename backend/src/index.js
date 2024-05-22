@@ -1,10 +1,11 @@
 require("dotenv").config();
-
 const express = require("express");
 const { ApolloServer } = require("apollo-server-express");
 const http = require("http");
-const { Server } = require("socket.io");
 const cors = require("cors");
+const { makeExecutableSchema } = require("@graphql-tools/schema");
+const { execute, subscribe } = require("graphql");
+const { SubscriptionServer } = require("subscriptions-transport-ws");
 const { typeDefs } = require("./schema");
 const { resolvers } = require("./resolvers");
 const { sequelize } = require("./models");
@@ -19,9 +20,10 @@ app.use(
 );
 
 async function startServer() {
+  const schema = makeExecutableSchema({ typeDefs, resolvers });
+
   const server = new ApolloServer({
-    typeDefs,
-    resolvers,
+    schema,
     context: async ({ req }) => {
       const token = req.headers.authorization || "";
       const user = await getUserFromToken(token);
@@ -33,20 +35,24 @@ async function startServer() {
   server.applyMiddleware({ app });
 
   const httpServer = http.createServer(app);
-  const io = new Server(httpServer, {
-    cors: {
-      origin: "http://localhost:3000",
-      methods: ["GET", "POST"],
-      credentials: true,
-    },
-  });
 
-  io.on("connection", (socket) => {
-    console.log("a user connected");
-    socket.on("disconnect", () => {
-      console.log("user disconnected");
-    });
-  });
+  SubscriptionServer.create(
+    {
+      execute,
+      subscribe,
+      schema,
+      onConnect: (connectionParams, webSocket, context) => {
+        console.log("Connected to websocket");
+      },
+      onDisconnect: (webSocket, context) => {
+        console.log("Disconnected from websocket");
+      },
+    },
+    {
+      server: httpServer,
+      path: "/graphql",
+    },
+  );
 
   const PORT = process.env.PORT || 4000;
 

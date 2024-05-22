@@ -21,6 +21,10 @@ const typeDefs = gql`
     register(username: String!, password: String!): AuthPayload
     login(username: String!, password: String!): AuthPayload
   }
+
+  type Subscription {
+    signInCountUpdated: Int!
+  }
 `;
 
 module.exports = { typeDefs };
