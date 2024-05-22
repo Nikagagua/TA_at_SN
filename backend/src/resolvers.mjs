@@ -1,8 +1,19 @@
 import { User } from "./models.mjs";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-export const resolvers = {
+const createToken = (user) => {
+  return jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+    expiresIn: "1d",
+  });
+};
+
+const resolvers = {
   Query: {
-    me: async (_, __, { user }) => user,
+    me: async (_, __, { user }) => {
+      if (!user) throw new Error("Not authenticated");
+      return user;
+    },
     globalSignInCount: async () => {
       const users = await User.findAll();
       return users.reduce((sum, user) => sum + user.signInCount, 0);
@@ -16,12 +27,17 @@ export const resolvers = {
     },
     login: async (_, { username, password }) => {
       const user = await User.findOne({ where: { username } });
-      if (!user || !(await bcrypt.compare(password, user.password))) {
-        throw new Error("Invalid credentials");
-      }
+      if (!user) throw new Error("Invalid credentials");
+
+      const valid = await bcrypt.compare(password, user.password);
+      if (!valid) throw new Error("Invalid credentials");
+
       user.signInCount += 1;
       await user.save();
+
       return { token: createToken(user), user };
     },
   },
 };
+
+export { resolvers };

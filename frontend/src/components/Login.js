@@ -17,14 +17,21 @@ const LOGIN_MUTATION = gql`
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [login] = useMutation(LOGIN_MUTATION);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { data } = await login({ variables: { username, password } });
-    localStorage.setItem("token", data.login.token);
-    navigate("/dashboard");
+    try {
+      const { data } = await login({ variables: { username, password } });
+      localStorage.setItem("token", data.login.token);
+      navigate("/dashboard");
+    } catch (error) {
+      setError(
+        "Invalid credentials. Please register if you don't have an account.",
+      );
+    }
   };
 
   return (
@@ -44,6 +51,14 @@ const Login = () => {
         />
         <button type="submit">Login</button>
       </form>
+      {error && (
+        <div>
+          <p>{error}</p>
+          <p>
+            Don't have an account? <a href="/register">Register here</a>.
+          </p>
+        </div>
+      )}
     </div>
   );
 };
