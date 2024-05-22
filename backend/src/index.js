@@ -2,13 +2,13 @@ require("dotenv").config();
 
 const express = require("express");
 const { ApolloServer } = require("apollo-server-express");
+const http = require("http");
+const { Server } = require("socket.io");
+const cors = require("cors");
 const { typeDefs } = require("./schema");
 const { resolvers } = require("./resolvers");
 const { sequelize } = require("./models");
 const { getUserFromToken } = require("./auth");
-const http = require("http");
-const { Server } = require("socket.io");
-const cors = require("cors");
 
 const app = express();
 app.use(
