@@ -24,20 +24,21 @@ const SIGN_IN_COUNT_SUBSCRIPTION = gql`
 `;
 
 const Dashboard = () => {
-  const { data: meData, refetch: refetchMe } = useQuery(ME_QUERY, {
-    onError: (error) => console.error("Error fetching me data", error),
-  });
-  const { data: globalData, refetch: refetchGlobal } = useQuery(
-    GLOBAL_SIGN_IN_COUNT_QUERY,
-    {
-      onError: (error) => console.error("Error fetching global data", error),
-    },
-  );
+  const {
+    data: meData,
+    refetch: refetchMe,
+    error: meError,
+  } = useQuery(ME_QUERY);
+  const {
+    data: globalData,
+    refetch: refetchGlobal,
+    error: globalError,
+  } = useQuery(GLOBAL_SIGN_IN_COUNT_QUERY);
 
   const [globalSignInCount, setGlobalSignInCount] = useState(0);
 
   useSubscription(SIGN_IN_COUNT_SUBSCRIPTION, {
-    onSubscriptionData: ({ subscriptionData }) => {
+    onSubscriptionData: () => {
       refetchMe();
       refetchGlobal();
     },
@@ -54,6 +55,10 @@ const Dashboard = () => {
       alert("Global sign-in count has reached 5!");
     }
   }, [globalSignInCount]);
+
+  if (meError) {
+    return <p>Error fetching me data: {meError.message}</p>;
+  }
 
   if (!meData || !meData.me) {
     return <p>Loading...</p>;
