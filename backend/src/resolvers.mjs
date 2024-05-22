@@ -3,9 +3,13 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const createToken = (user) => {
-  return jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-    expiresIn: "1d",
-  });
+  return jwt.sign(
+    { id: user.id, username: user.username },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "1d",
+    },
+  );
 };
 
 const resolvers = {
@@ -21,9 +25,17 @@ const resolvers = {
   },
   Mutation: {
     register: async (_, { username, password }) => {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const user = await User.create({ username, password: hashedPassword });
-      return { token: createToken(user), user };
+      try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = await User.create({ username, password: hashedPassword });
+        return { token: createToken(user), user };
+      } catch (error) {
+        if (error.name === "SequelizeUniqueConstraintError") {
+          throw new Error(`Username "${username}" is already taken.`);
+        }
+        console.error("Error during registration:", error);
+        throw new Error("Registration error");
+      }
     },
     login: async (_, { username, password }) => {
       const user = await User.findOne({ where: { username } });

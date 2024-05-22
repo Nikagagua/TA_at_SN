@@ -58,16 +58,19 @@ async function startServer() {
 
   const PORT = process.env.PORT || 4000;
 
-  httpServer.listen(PORT, () => {
+  httpServer.listen(PORT, async () => {
     console.log(
       `Server is running on http://localhost:${PORT}${server.graphqlPath}`,
     );
+    try {
+      await sequelize.authenticate();
+      console.log("Database connected...");
+      await sequelize.sync({ force: false });
+      console.log("Database synchronized...");
+    } catch (error) {
+      console.error("Failed to sync database:", error);
+    }
   });
 }
-
-await sequelize.authenticate();
-console.log("Database connected...");
-await sequelize.sync();
-console.log("Database synchronized...");
 
 startServer();

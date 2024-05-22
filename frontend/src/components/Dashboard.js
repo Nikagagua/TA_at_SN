@@ -29,11 +29,9 @@ const Dashboard = () => {
     refetch: refetchMe,
     error: meError,
   } = useQuery(ME_QUERY);
-  const {
-    data: globalData,
-    refetch: refetchGlobal,
-    error: globalError,
-  } = useQuery(GLOBAL_SIGN_IN_COUNT_QUERY);
+  const { data: globalData, refetch: refetchGlobal } = useQuery(
+    GLOBAL_SIGN_IN_COUNT_QUERY,
+  );
 
   const [globalSignInCount, setGlobalSignInCount] = useState(0);
 
@@ -58,7 +56,6 @@ const Dashboard = () => {
 
   if (meError) {
     if (meError.message.includes("Not authenticated")) {
-      // Handle not authenticated error by redirecting to login page
       window.location.href = "/login";
     }
     return <p>Error fetching me data: {meError.message}</p>;
