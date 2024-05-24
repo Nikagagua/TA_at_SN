@@ -64,6 +64,7 @@ const Login = () => {
             placeholder="Username"
             fullWidth
             margin="normal"
+            autoComplete="username"
           />
           <TextField
             value={password}
@@ -72,6 +73,7 @@ const Login = () => {
             type="password"
             fullWidth
             margin="normal"
+            autoComplete="current-password"
           />
           <Button type="submit" variant="contained" color="primary" fullWidth>
             Login

@@ -1,12 +1,16 @@
 import jwt from "jsonwebtoken";
 import { User } from "./models.mjs";
 
-const jwtSecret = process.env.JWT_SECRET || "1F8D81855835ABB8E7FB42E2F4C53";
+const jwtSecret = process.env.JWT_SECRET;
 
 export const createToken = (user) => {
-  return jwt.sign({ id: user.id, username: user.username }, jwtSecret, {
-    expiresIn: "1d",
-  });
+  return jwt.sign(
+    { id: user.id, username: user.username, signInCount: user.signInCount },
+    jwtSecret,
+    {
+      expiresIn: "1d",
+    },
+  );
 };
 
 export const getUserFromToken = async (token) => {

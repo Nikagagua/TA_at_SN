@@ -5,12 +5,12 @@ import { PubSub } from "graphql-subscriptions";
 
 const pubsub = new PubSub();
 const SIGN_IN_COUNT_UPDATED = "SIGN_IN_COUNT_UPDATED";
-const jswSecret = process.env.JWT_SECRET;
+const jwtSecret = process.env.JWT_SECRET;
 
 const createToken = (user) => {
   return jwt.sign(
     { id: user.id, username: user.username, signInCount: user.signInCount },
-    jswSecret,
+    jwtSecret,
     {
       expiresIn: "1d",
     },
