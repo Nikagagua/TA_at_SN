@@ -15,6 +15,7 @@ export const getUserFromToken = async (token) => {
   if (!token) return null;
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("Decoded token:", decoded);
     return await User.findByPk(decoded.id);
   } catch (err) {
     console.error("Failed to authenticate token:", err);

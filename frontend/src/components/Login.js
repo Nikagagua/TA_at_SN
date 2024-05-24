@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useMutation, gql } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "./UserContext";
 
 const LOGIN_MUTATION = gql`
   mutation login($username: String!, $password: String!) {
@@ -20,12 +21,13 @@ const Login = () => {
   const [error, setError] = useState("");
   const [login] = useMutation(LOGIN_MUTATION);
   const navigate = useNavigate();
+  const { login: loginUser } = useUser();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const { data } = await login({ variables: { username, password } });
-      localStorage.setItem("token", data.login.token);
+      loginUser(data.login.token);
       navigate("/dashboard");
     } catch (error) {
       setError(

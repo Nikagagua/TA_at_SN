@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useQuery, gql, useSubscription } from "@apollo/client";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "./UserContext";
 
 const ME_QUERY = gql`
   query me {
@@ -24,10 +26,12 @@ const SIGN_IN_COUNT_SUBSCRIPTION = gql`
 `;
 
 const Dashboard = () => {
+  const { user, logout } = useUser();
+  const navigate = useNavigate();
   const {
     data: meData,
-    refetch: refetchMe,
     error: meError,
+    refetch: refetchMe,
   } = useQuery(ME_QUERY);
   const { data: globalData, refetch: refetchGlobal } = useQuery(
     GLOBAL_SIGN_IN_COUNT_QUERY,
@@ -70,6 +74,14 @@ const Dashboard = () => {
       <h1>Welcome, {meData.me.username}</h1>
       <p>Your sign-in count: {meData.me.signInCount}</p>
       <p>Global sign-in count: {globalSignInCount}</p>
+      <button
+        onClick={() => {
+          logout();
+          navigate("/login");
+        }}
+      >
+        Logout
+      </button>
     </div>
   );
 };

@@ -8,43 +8,49 @@ import {
 } from "@apollo/client";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
+import { useUser } from "./components/UserContext";
 
-const httpLink = createHttpLink({
-  uri: "http://localhost:4000/graphql",
-  headers: {
-    authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-  },
-});
-
-const wsLink = new WebSocketLink({
-  uri: `ws://localhost:4000/graphql`,
-  options: {
-    reconnect: true,
-    connectionParams: {
-      authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+const ApolloProvider = ({ children }) => {
+  const { user } = useUser();
+  const httpLink = createHttpLink({
+    uri: "http://localhost:4000/graphql",
+    headers: {
+      authorization: user
+        ? `Bearer ${localStorage.getItem("token") || ""}`
+        : "",
     },
-  },
-});
+  });
 
-const splitLink = split(
-  ({ query }) => {
-    const definition = getMainDefinition(query);
-    return (
-      definition.kind === "OperationDefinition" &&
-      definition.operation === "subscription"
-    );
-  },
-  wsLink,
-  httpLink,
-);
+  const wsLink = new WebSocketLink({
+    uri: `ws://localhost:4000/graphql`,
+    options: {
+      reconnect: true,
+      connectionParams: {
+        authorization: user
+          ? `Bearer ${localStorage.getItem("token") || ""}`
+          : "",
+      },
+    },
+  });
 
-const client = new ApolloClient({
-  link: splitLink,
-  cache: new InMemoryCache(),
-});
+  const splitLink = split(
+    ({ query }) => {
+      const definition = getMainDefinition(query);
+      return (
+        definition.kind === "OperationDefinition" &&
+        definition.operation === "subscription"
+      );
+    },
+    wsLink,
+    httpLink,
+  );
 
-const ApolloProvider = ({ children }) => (
-  <Provider client={client}>{children}</Provider>
-);
+  const client = new ApolloClient({
+    link: splitLink,
+    cache: new InMemoryCache(),
+  });
+
+  return <Provider client={client}>{children}</Provider>;
+};
 
 export default ApolloProvider;

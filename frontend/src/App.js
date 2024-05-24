@@ -5,19 +5,22 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import Dashboard from "./components/Dashboard";
 import ApolloProvider from "./ApolloProvider";
+import { UserProvider } from "./components/UserContext";
 
 const App = () => {
   return (
-    <ApolloProvider>
-      <Router>
-        <Routes>
-          <Route exact path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-        </Routes>
-      </Router>
-    </ApolloProvider>
+    <UserProvider>
+      <ApolloProvider>
+        <Router>
+          <Routes>
+            <Route exact path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Routes>
+        </Router>
+      </ApolloProvider>
+    </UserProvider>
   );
 };
 
