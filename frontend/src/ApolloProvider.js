@@ -15,7 +15,7 @@ const ApolloProvider = ({ children }) => {
   const token = user ? user.token : localStorage.getItem("token");
 
   const httpLink = createHttpLink({
-    uri: "http://localhost:4000/graphql",
+    uri: process.env.REACT_APP_GRAPHQL_ENDPOINT,
     headers: {
       authorization: token ? `Bearer ${token}` : "",
     },
