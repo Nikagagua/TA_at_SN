@@ -5,7 +5,7 @@ dotenv.config();
 
 const sequelize = new Sequelize({
   dialect: "sqlite",
-  storage: process.env.DATABASE_URL,
+  storage: "sqlite:./database.sqlite",
 });
 
 const User = sequelize.define(

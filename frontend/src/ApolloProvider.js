@@ -12,12 +12,12 @@ import { useUser } from "./components/UserContext";
 
 const ApolloProvider = ({ children }) => {
   const { user } = useUser();
+  const token = user ? user.token : "";
+
   const httpLink = createHttpLink({
     uri: "http://localhost:4000/graphql",
     headers: {
-      authorization: user
-        ? `Bearer ${localStorage.getItem("token") || ""}`
-        : "",
+      authorization: token ? `Bearer ${token}` : "",
     },
   });
 
@@ -26,9 +26,7 @@ const ApolloProvider = ({ children }) => {
     options: {
       reconnect: true,
       connectionParams: {
-        authorization: user
-          ? `Bearer ${localStorage.getItem("token") || ""}`
-          : "",
+        authorization: token ? `Bearer ${token}` : "",
       },
     },
   });

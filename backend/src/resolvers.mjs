@@ -1,11 +1,15 @@
 import { User } from "./models.mjs";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { PubSub } from "graphql-subscriptions";
+
+const pubsub = new PubSub();
+const SIGN_IN_COUNT_UPDATED = "SIGN_IN_COUNT_UPDATED";
 
 const createToken = (user) => {
   return jwt.sign(
     { id: user.id, username: user.username },
-    process.env.JWT_SECRET,
+    "1F8D81855835ABB8E7FB42E2F4C53",
     {
       expiresIn: "1d",
     },
@@ -47,7 +51,18 @@ const resolvers = {
       user.signInCount += 1;
       await user.save();
 
+      const globalSignInCount = await User.count();
+
+      pubsub.publish(SIGN_IN_COUNT_UPDATED, {
+        signInCountUpdated: globalSignInCount,
+      });
+
       return { token: createToken(user), user };
+    },
+  },
+  Subscription: {
+    signInCountUpdated: {
+      subscribe: () => pubsub.asyncIterator(SIGN_IN_COUNT_UPDATED),
     },
   },
 };

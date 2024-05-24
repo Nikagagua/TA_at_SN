@@ -3,16 +3,6 @@ import { useQuery, gql, useSubscription } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "./UserContext";
 
-const ME_QUERY = gql`
-  query me {
-    me {
-      id
-      username
-      signInCount
-    }
-  }
-`;
-
 const GLOBAL_SIGN_IN_COUNT_QUERY = gql`
   query globalSignInCount {
     globalSignInCount
@@ -26,13 +16,8 @@ const SIGN_IN_COUNT_SUBSCRIPTION = gql`
 `;
 
 const Dashboard = () => {
-  const { logout } = useUser();
+  const { user, logout } = useUser();
   const navigate = useNavigate();
-  const {
-    data: meData,
-    error: meError,
-    refetch: refetchMe,
-  } = useQuery(ME_QUERY);
   const { data: globalData, refetch: refetchGlobal } = useQuery(
     GLOBAL_SIGN_IN_COUNT_QUERY,
   );
@@ -40,9 +25,11 @@ const Dashboard = () => {
   const [globalSignInCount, setGlobalSignInCount] = useState(0);
 
   useSubscription(SIGN_IN_COUNT_SUBSCRIPTION, {
-    onData: () => {
-      refetchMe();
-      refetchGlobal();
+    onData: ({ subscriptionData }) => {
+      if (subscriptionData.data) {
+        setGlobalSignInCount(subscriptionData.data.signInCountUpdated);
+        refetchGlobal();
+      }
     },
   });
 
@@ -58,21 +45,24 @@ const Dashboard = () => {
     }
   }, [globalSignInCount]);
 
-  if (meError) {
-    if (meError.message.includes("Not authenticated")) {
-      window.location.href = "/login";
+  useEffect(() => {
+    if (!user) {
+      console.log("Not authenticated, redirecting to login...");
+      setTimeout(() => {
+        logout();
+        navigate("/login");
+      }, 0);
     }
-    return <p>Error fetching me data: {meError.message}</p>;
-  }
+  }, [user, logout, navigate]);
 
-  if (!meData || !meData.me) {
+  if (!user) {
     return <p>Loading...</p>;
   }
 
   return (
     <div>
-      <h1>Welcome, {meData.me.username}</h1>
-      <p>Your sign-in count: {meData.me.signInCount}</p>
+      <h1>Welcome, {user.username}</h1>
+      <p>Your sign-in count: {user.signInCount}</p>
       <p>Global sign-in count: {globalSignInCount}</p>
       <button
         onClick={() => {
