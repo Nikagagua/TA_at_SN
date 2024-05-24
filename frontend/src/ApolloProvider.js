@@ -11,6 +11,9 @@ import { getMainDefinition } from "@apollo/client/utilities";
 
 const httpLink = createHttpLink({
   uri: "http://localhost:4000/graphql",
+  headers: {
+    authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+  },
 });
 
 const wsLink = new WebSocketLink({
@@ -38,9 +41,6 @@ const splitLink = split(
 const client = new ApolloClient({
   link: splitLink,
   cache: new InMemoryCache(),
-  headers: {
-    authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-  },
 });
 
 const ApolloProvider = ({ children }) => (

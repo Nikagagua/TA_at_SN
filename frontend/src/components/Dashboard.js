@@ -36,7 +36,7 @@ const Dashboard = () => {
   const [globalSignInCount, setGlobalSignInCount] = useState(0);
 
   useSubscription(SIGN_IN_COUNT_SUBSCRIPTION, {
-    onSubscriptionData: () => {
+    onData: () => {
       refetchMe();
       refetchGlobal();
     },

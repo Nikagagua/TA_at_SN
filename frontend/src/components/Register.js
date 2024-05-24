@@ -17,7 +17,8 @@ const REGISTER_MUTATION = gql`
 const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [register, { error }] = useMutation(REGISTER_MUTATION);
+  const [error, setError] = useState("");
+  const [register] = useMutation(REGISTER_MUTATION);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -27,7 +28,7 @@ const Register = () => {
       localStorage.setItem("token", data.register.token);
       navigate("/dashboard");
     } catch (e) {
-      console.error("Error during registration:", e);
+      setError(e.message);
     }
   };
 
@@ -48,7 +49,7 @@ const Register = () => {
         />
         <button type="submit">Register</button>
       </form>
-      {error && <p>Error registering: {error.message}</p>}
+      {error && <p>Error registering: {error}</p>}
     </div>
   );
 };

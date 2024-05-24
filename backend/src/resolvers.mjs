@@ -1,17 +1,3 @@
-import { User } from "./models.mjs";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-
-const createToken = (user) => {
-  return jwt.sign(
-    { id: user.id, username: user.username },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "1d",
-    },
-  );
-};
-
 const resolvers = {
   Query: {
     me: async (_, __, { user }) => {
@@ -47,7 +33,16 @@ const resolvers = {
       user.signInCount += 1;
       await user.save();
 
+      pubsub.publish("SIGN_IN_COUNT_UPDATED", {
+        signInCountUpdated: await resolvers.Query.globalSignInCount(),
+      });
+
       return { token: createToken(user), user };
+    },
+  },
+  Subscription: {
+    signInCountUpdated: {
+      subscribe: () => pubsub.asyncIterator(["SIGN_IN_COUNT_UPDATED"]),
     },
   },
 };
