@@ -2,6 +2,15 @@ import React, { useState } from "react";
 import { useMutation, gql } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "./UserContext";
+import {
+  Container,
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Link,
+  Alert,
+} from "@mui/material";
 
 const LOGIN_MUTATION = gql`
   mutation login($username: String!, $password: String!) {
@@ -37,31 +46,47 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <h1>Login</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder="Username"
-        />
-        <input
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-          type="password"
-        />
-        <button type="submit">Login</button>
-      </form>
-      {error && (
-        <div>
-          <p>{error}</p>
-          <p>
-            Don't have an account? <a href="/register">Register here</a>.
-          </p>
-        </div>
-      )}
-    </div>
+    <Container maxWidth="sm">
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        height="100vh"
+      >
+        <Typography variant="h4" component="h1" gutterBottom>
+          Login
+        </Typography>
+        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+          <TextField
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Username"
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            type="password"
+            fullWidth
+            margin="normal"
+          />
+          <Button type="submit" variant="contained" color="primary" fullWidth>
+            Login
+          </Button>
+        </form>
+        {error && (
+          <Alert severity="error" style={{ marginTop: 20 }}>
+            {error}
+          </Alert>
+        )}
+        <Typography variant="body2" style={{ marginTop: 20 }}>
+          Don't have an account? <Link href="/register">Register here</Link>.
+        </Typography>
+      </Box>
+    </Container>
   );
 };
 

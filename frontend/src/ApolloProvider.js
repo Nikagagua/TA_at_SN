@@ -12,7 +12,7 @@ import { useUser } from "./components/UserContext";
 
 const ApolloProvider = ({ children }) => {
   const { user } = useUser();
-  const token = user ? user.token : "";
+  const token = user ? user.token : localStorage.getItem("token");
 
   const httpLink = createHttpLink({
     uri: "http://localhost:4000/graphql",

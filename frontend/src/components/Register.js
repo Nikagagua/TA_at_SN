@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import { useMutation, gql } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
+import {
+  Container,
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Alert,
+} from "@mui/material";
 
 const REGISTER_MUTATION = gql`
   mutation register($username: String!, $password: String!) {
@@ -33,24 +41,44 @@ const Register = () => {
   };
 
   return (
-    <div>
-      <h1>Register</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder="Username"
-        />
-        <input
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-          type="password"
-        />
-        <button type="submit">Register</button>
-      </form>
-      {error && <p>Error registering: {error}</p>}
-    </div>
+    <Container maxWidth="sm">
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        height="100vh"
+      >
+        <Typography variant="h4" component="h1" gutterBottom>
+          Register
+        </Typography>
+        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+          <TextField
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Username"
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            type="password"
+            fullWidth
+            margin="normal"
+          />
+          <Button type="submit" variant="contained" color="primary" fullWidth>
+            Register
+          </Button>
+        </form>
+        {error && (
+          <Alert severity="error" style={{ marginTop: 20 }}>
+            Error registering: {error}
+          </Alert>
+        )}
+      </Box>
+    </Container>
   );
 };
 

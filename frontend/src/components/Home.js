@@ -1,25 +1,52 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Container, Typography, Box, Button } from "@mui/material";
 
 const Home = () => {
   return (
-    <div>
-      <h1>Home Page</h1>
-      <p>Welcome to the home page!</p>
-      <nav>
-        <ul>
-          <li>
-            <Link to="/login">Login</Link>
-          </li>
-          <li>
-            <Link to="/register">Register</Link>
-          </li>
-          <li>
-            <Link to="/dashboard">Dashboard</Link>
-          </li>
-        </ul>
-      </nav>
-    </div>
+    <Container maxWidth="sm" style={{ textAlign: "center", marginTop: "50px" }}>
+      <Typography variant="h3" component="h1" gutterBottom>
+        Home Page
+      </Typography>
+      <Typography variant="body1" paragraph>
+        Welcome to the home page!
+      </Typography>
+      <Box mt={4}>
+        <Box mb={2}>
+          <Button
+            variant="contained"
+            color="primary"
+            component={Link}
+            to="/login"
+            fullWidth
+          >
+            Login
+          </Button>
+        </Box>
+        <Box mb={2}>
+          <Button
+            variant="contained"
+            color="primary"
+            component={Link}
+            to="/register"
+            fullWidth
+          >
+            Register
+          </Button>
+        </Box>
+        <Box mb={2}>
+          <Button
+            variant="contained"
+            color="primary"
+            component={Link}
+            to="/dashboard"
+            fullWidth
+          >
+            Dashboard
+          </Button>
+        </Box>
+      </Box>
+    </Container>
   );
 };
 
