@@ -2,7 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useQuery, gql, useSubscription } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "./UserContext";
-import { AppBar, Toolbar, Typography, Button, Snackbar } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Snackbar,
+  Grid,
+  Card,
+  CardContent,
+  Box,
+} from "@mui/material";
 import { Alert } from "@mui/material";
 
 const GLOBAL_SIGN_IN_COUNT_QUERY = gql`
@@ -79,15 +89,33 @@ const Dashboard = () => {
           </Button>
         </Toolbar>
       </AppBar>
-      <div style={{ padding: 20 }}>
-        <Typography variant="h4">Welcome, {user.username}</Typography>
-        <Typography variant="h6">
-          Your sign-in count: {user.signInCount}
+      <Box p={3}>
+        <Typography variant="h4" gutterBottom>
+          Welcome, {user.username}
         </Typography>
-        <Typography variant="h6">
-          Global sign-in count: {globalSignInCount}
-        </Typography>
-      </div>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6}>
+            <Card>
+              <CardContent>
+                <Typography variant="h5" component="div">
+                  Your Sign-In Count
+                </Typography>
+                <Typography variant="h2">{user.signInCount}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Card>
+              <CardContent>
+                <Typography variant="h5" component="div">
+                  Global Sign-In Count
+                </Typography>
+                <Typography variant="h2">{globalSignInCount}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Box>
       <Snackbar
         open={openSnackbar}
         autoHideDuration={6000}
