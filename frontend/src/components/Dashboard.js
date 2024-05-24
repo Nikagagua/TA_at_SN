@@ -26,7 +26,7 @@ const SIGN_IN_COUNT_SUBSCRIPTION = gql`
 `;
 
 const Dashboard = () => {
-  const { user, logout } = useUser();
+  const { logout } = useUser();
   const navigate = useNavigate();
   const {
     data: meData,

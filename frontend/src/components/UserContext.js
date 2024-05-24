@@ -10,15 +10,19 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    console.log("Stored token:", token);
     if (token) {
       const decoded = jwtDecode(token);
+      console.log("Decoded token:", decoded);
       setUser(decoded);
     }
   }, []);
 
   const login = (token) => {
     localStorage.setItem("token", token);
+    console.log("Token set in local storage:", token);
     const decoded = jwtDecode(token);
+    console.log("Decoded token on login:", decoded);
     setUser(decoded);
   };
 

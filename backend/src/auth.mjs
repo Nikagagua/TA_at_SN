@@ -14,6 +14,7 @@ export const createToken = (user) => {
 export const getUserFromToken = async (token) => {
   if (!token) return null;
   try {
+    console.log("Token received for verification:", token);
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log("Decoded token:", decoded);
     return await User.findByPk(decoded.id);
